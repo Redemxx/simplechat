@@ -13,8 +13,8 @@ emoji_regex = r":[^ ]+:"
 urls = []
 
 emojis = {
-    ":smiley:": "😀",
-    ":frown:": "☹️",
+    ":smile:": "😀",
+    ":sad:": "☹️",
     ":giddy:": "😁",
     ":lmao:": "🤣",
     ":smug:": "😏",
@@ -51,7 +51,8 @@ class App:
         self.data_queue = queue.Queue()
 
         # Server config
-        self.host = "dread.deadendnet.net"
+        # self.host = "dread.deadendnet.net"
+        self.host = "localhost"
         self.port = 7580
 
         # Login frame
@@ -81,6 +82,7 @@ class App:
         self.chatDisplay.tag_configure("systemMsg", background="#f5250a", foreground="#ffffff")
         self.chatDisplay.tag_configure("directMsg", background="#3fc0e0")
         self.chatDisplay.tag_configure("weblink", foreground="#324cf0", underline=True)
+        self.chatDisplay.tag_configure("infoMsg", foreground="#007787")
         self.chatDisplay.tag_bind("weblink", "<Button-1>", open_link)
 
         # Input area frame
@@ -207,6 +209,11 @@ class App:
         if not message or not self.running:
             return
 
+        if message.startswith('/'):
+            self.command(message[1:])
+            self.messageEntry.delete(0, tk.END)
+            return
+
         try:
             # Color tag for sender
             self.display_message(f"{self.username}: {message}", "myMsg")
@@ -243,7 +250,6 @@ class App:
             self.messageEntry.delete(0, tk.END)
             self.messageEntry.insert(0, new_message)
 
-
     def sendMessageEvent(self, event):
         self.sendMessage()
         return
@@ -261,6 +267,30 @@ class App:
         except:
             # Connection is already dead
             pass
+
+    def command(self, message):
+        segments = message.split(' ')
+
+        match segments[0]:
+            case "help":
+                self.display_message("Available commands:\n\temojis\n\tlist", "infoMsg")
+            case "emojis":
+                self.command_emojis()
+            case "list":
+                self.command_list()
+
+    def command_emojis(self):
+        message = "Available Emojis:"
+        for emoji in emojis.keys():
+            message += f"\n\t{emoji} --> {emojis[emoji]}"
+        self.display_message(message, "infoMsg")
+
+    def command_list(self):
+        message = "Online Users:"
+        self.socket.sendall("&&&USER-LIST&&&".encode('utf-8'))
+        # data = self.socket.recv(1024).decode()
+        # message += data
+        self.display_message(message, "infoMsg")
 
 
 if __name__ == "__main__":

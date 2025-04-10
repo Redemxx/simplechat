@@ -8,6 +8,7 @@ import datetime
 incoming_port = 7580
 username_regex = r"(\B|\b)@[^ ]+\b"
 client_close_connection_message = "&&&SYSTEM-CLOSE&&&"
+client_list_request = "&&&USER-LIST&&&"
 log_lock = False
 
 client_connections = {}
@@ -52,6 +53,11 @@ def client_connection(socket_conn: socket, addr):
 
             if message == client_close_connection_message:
                 break
+            elif message == client_list_request:
+                response = "\n".join(client_connections.keys())
+                print(response)
+                client_connections[username].put(response)
+                continue
             else:
                 forward_message(username, message)
     except:
