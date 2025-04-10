@@ -51,8 +51,7 @@ class App:
         self.data_queue = queue.Queue()
 
         # Server config
-        # self.host = "dread.deadendnet.net"
-        self.host = "localhost"
+        self.host = "dread.deadendnet.net"
         self.port = 7580
 
         # Login frame
