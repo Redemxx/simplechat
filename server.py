@@ -55,7 +55,6 @@ def client_connection(socket_conn: socket, addr):
                 break
             elif message == client_list_request:
                 response = "\n".join(client_connections.keys())
-                print(response)
                 client_connections[username].put(response)
                 continue
             else:
