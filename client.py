@@ -137,6 +137,7 @@ class App:
 
             # Initiate GUI update
             self.update_gui()
+            self.command_list()
 
         except Exception as e:
             messagebox.showerror("Error", f"Failed to connect: {str(e)}")
